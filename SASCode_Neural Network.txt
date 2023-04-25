@@ -1,0 +1,57 @@
+/*Neural Network*/
+proc import out=GEM datafile="/home/u61165957/sasuser.v94/cubic_zirconia.xlsx"
+dbms=xlsx replace; 
+sheet="cubic_zirconia";
+run;
+
+proc hpneural data=GEM;
+	partition fraction(validate=0.3 seed=12345);
+	target price/level=int;
+	input cut color clarity/level=nom;
+	input carat depth table x y z/level=int;
+	hidden 10;
+	train maxiter=1000 numtries=5;
+run;
+
+proc hpneural data=GEM;
+	partition fraction(validate=0.3 seed=12345);
+	target price/level=int;
+	input cut color clarity/level=nom;
+	input carat depth table x y z/level=int;
+	hidden 20;
+	train maxiter=1000 numtries=5;
+run;
+
+proc hpneural data=GEM;
+	partition fraction(validate=0.3 seed=12345);
+	target price/level=int;
+	input cut color clarity/level=nom;
+	input carat depth table x y z/level=int;
+	hidden 5;
+	train maxiter=1000 numtries=5;
+run;
+
+proc hpneural data=GEM;
+	partition fraction(validate=0.3 seed=12345);
+	target price/level=int;
+	input cut color clarity/level=nom;
+	input carat depth table x y z/level=int;
+	hidden 7;
+	train maxiter=1000 numtries=5;
+run;
+
+/*********************************************/
+/*Final neural network built on important variables*/
+proc hpneural data=GEM;
+	partition fraction(validate=0.3 seed=12345);
+	target price/level=int;
+	input  color clarity/level=nom; 
+	input carat /level=int; 
+	hidden 3;
+	hidden 10;
+	train maxiter=100 numtries=5;
+run; 
+
+
+
+
