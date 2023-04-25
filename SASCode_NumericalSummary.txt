@@ -1,0 +1,35 @@
+/*NumericalSummary- Histogram and side by side boxplots*/
+
+proc import out=gemstone datafile="/home/u61150156/sasuser.v94/Data Science/cubic_zirconia.csv"
+dbms=csv replace; 
+run;
+
+proc sgplot data=gemstone;
+	vbox price/category=cut;
+	title "Median Price of a gemstone by Cut";
+run;
+
+proc sgplot data=gemstone;
+	vbox price/category=color;
+	title "Median Price of a gemstone by Color";
+run;
+
+proc sgplot data=gemstone;
+	vbox price/category=clarity;
+	title "Median Price of a gemstone by Clarity";
+run;
+
+proc sgplot data=gemstone;
+	histogram price/scale=count;
+	title "Histogram of Gemstone price";
+	xaxis label="Price range";
+	yaxis label="Count";
+run;
+
+proc sgplot data=gemstone;
+	histogram carat/scale=count;
+	title "Histogram of Gemstone carat";
+	xaxis label="Carat range";
+	yaxis label="Count";
+run;
+
