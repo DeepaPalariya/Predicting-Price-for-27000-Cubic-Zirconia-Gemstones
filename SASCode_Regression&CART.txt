@@ -1,0 +1,78 @@
+/*Multiple Linear Regression*/
+proc import out=gemstone datafile="/home/u62188546/sasuser.v94/DataScience Project/cubic_zirconia.xlsx"
+dbms=xlsx replace; 
+sheet="cubic_zirconia";
+run;
+
+proc freq data=gemstone;
+	table cut color clarity;
+run;
+
+data gemstone1;
+	set gemstone;
+	if cut="Good" then Good=1; else Good=0;
+	if cut="Ideal" then Ideal=1; else Ideal=0;
+	if cut="Premium" then Premium=1; else Premium=0;
+	if cut="Very Good" then VGood=1; else VGood=0;
+	if color="D" then D=1; else D=0;
+	if color="E" then E=1; else E=0;
+	if color="F" then F=1; else F=0;
+	if color="G" then G=1; else G=0;
+	if color="H" then H=1; else H=0;
+	if color="I" then I=1; else I=0;
+	if clarity="IF" then cIF=1; else cIF=0;
+	if clarity="SI1" then SI1=1; else SI1=0;
+	if clarity="SI2" then SI2=1; else SI2=0;
+	if clarity="VS1" then VS1=1; else VS1=0;
+	if clarity="VS2" then VS2=1; else VS2=0;
+	if clarity="VVS1" then VVS1=1; else VVS1=0;
+	if clarity="VVS2" then VVS2=1; else VVS2=0;
+run;
+
+proc freq data=gemstone1;
+	table cut color clarity Good Ideal Premium VGood D E F G H I cIF SI1 SI2 VS1 VS2 VVS1 VVS2;
+run;
+
+proc hpreg data=gemstone1 seed=12345; 
+	model price = carat depth table x y z Good Ideal Premium VGood D E F G H I cIF SI1 SI2 VS1 VS2 
+	VVS1 VVS2;
+	partition fraction(validate=0.3);
+run;
+
+proc hpreg data=gemstone1 seed=12345; 
+	model price=carat depth table x y z Good Ideal Premium VGood D E F G H I cIF SI1 SI2 VS1 VS2 
+	VVS1 VVS2;
+	selection method=stepwise(choose=validate);
+	partition fraction(validate=0.3);
+run;
+
+proc hpreg data=gemstone1 seed=12345; 
+	model price=carat depth table x y z Good Ideal Premium VGood D E F G H I cIF SI1 SI2 VS1 VS2 
+	VVS1 VVS2;
+	selection method=forward(choose=validate);
+	partition fraction(validate=0.3);
+run;
+
+proc hpreg data=gemstone1 seed=12345; 
+	model price=carat depth table x y z Good Ideal Premium VGood D E F G H I cIF SI1 SI2 VS1 VS2 
+	VVS1 VVS2;
+	selection method=backward(choose=validate);
+	partition fraction(validate=0.3);
+run;
+
+
+/******************************************************/
+/*CART*/
+proc import out=GemStones datafile= "/home/u62277456/sasuser.v94/cubic_zirconia.xlsx"
+dbms=xlsx replace; sheet = "Data";
+run;
+
+proc hpsplit data=GemStones nodes=detail;
+	class cut color clarity;
+	model price=cut color clarity carat depth table x y z;
+	grow rss;
+	prune cc;
+	partition fraction(validate=0.3 seed=12345);
+run;
+
+
